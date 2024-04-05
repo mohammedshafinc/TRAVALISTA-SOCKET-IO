@@ -7,7 +7,7 @@ const port = process.env.PORT
 const DB_url = process.env.MONGO_URI
 
 
-const express = express('express')
+const express = require('express')
 const app = express()
 const httpServer = require('http').createServer(app)
 const io = require('socket.io')(httpServer, {cors:{origin:'*'}
