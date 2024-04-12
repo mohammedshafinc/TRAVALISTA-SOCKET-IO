@@ -28,34 +28,46 @@ const { postchats } = require("./controllers/chatcontroller");
 io.use(async (socket, next) => {
     socket.userid = socket.handshake.auth.userid;
     next();
-}).on("connection", (sokcet) => {
+}).on("connection", (socket) => {
     console.log("a user connected");
-    socketId = socket.id;
+    const socketId = socket.id;
     const user = { socketid: socketId, userid: socket.userid };
     users.push(user);
+    console.log(users);
 
     socket.on("sendMessage", (data) => {
+        console.log(data)
         const { message, reciever, sender } = data;
+        console.log('haaai', message, reciever, sender);
         postchats(message, reciever, sender);
         data.date = new Date();
 
         const recipient = users.find((user) => user.userid === reciever);
+        console.log(user)
+        console.log(user.userid)
+        console.log(reciever)
+        console.log('dsfjdsfkldj', recipient)
 
         if (recipient) {
-            io.to(recipient.socketid).emit("recievedMessage", data);
+            io.to(recipient.socketid).emit("recieveMessage", data);
+            console.log(data)
         } else {
             console.log("no reciever found");
         }
     });
 
-    socket.on("disconnet", () => {
-        console.log(" a user disconnected");
-
-        let index = users.findIndex((e) => e.sockeid === socket.id);
-
+    socket.on("disconnect", () => {
+        
+        let index = users.findIndex((e) => e.socketid === socket.id);
+        console.log(index);
+        console.log(users);
+        
         if (index !== -1) {
+            console.log(users,'sdfnkdsfdsf')
             users.splice(index, 1);
+            console.log(" a user disconnected");
         } else {
+            console.log(users, 'else')
             console.log("users not found");
         }
         console.log(users, "disconnection");
